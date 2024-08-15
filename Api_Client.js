@@ -1,9 +1,9 @@
-class API_Client  {
+class APIClient {
   
   constructor(id, secret){
     this._Id = id;
     this._Secret = secret;
-    this.Urlrl = 'https://www.bling.com.br/';
+    this.url = 'https://www.bling.com.br/';
     
   }
 
@@ -20,9 +20,8 @@ class API_Client  {
   
   apiPost(endPoint, postHeaders, postPayload){
 
-    let url = this.Url + endPoint;
-    let credentialsBase64 = Utilities.base64Encode(`${this._Id}:${this._Secret}`);
-
+    let url = this.url + endPoint;
+    
     let response = '';
     let responseData = ';'
     let opstions = {
@@ -31,9 +30,6 @@ class API_Client  {
         payload: postPayload,
         muteHttpExeptions:true,
     };
-
-
-    postHeaders["Authorization"] = `Basic ${credentialsBase64}`;
 
     try{
       response = UrlFetchApp.fetch(url,opstions);
@@ -48,11 +44,27 @@ class API_Client  {
   }
 
 
-  getToken(){
-    let  params = '';
+  getToken(code){
+    let  payload;
+    let headers;
     let endpoint = 'Api/v3/oauth/token';
+    let credentialsBase64 = Utilities.base64Encode(`${this._Id}:${this._Secret}`);
 
 
+    headers  = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "1.0",
+        "Authorization": `Basic ${credentialsBase64}`,
+    };
+
+    payload ={
+      "grant_type":'authorization_code',
+       "code": code
+    };
+
+    let response = this.apiPost(endpoint,headers,payload)
+
+    console.log(response);
   }
 
   
